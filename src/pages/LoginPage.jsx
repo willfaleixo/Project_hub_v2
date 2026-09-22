@@ -143,31 +143,33 @@ const LoginPage = () => {
             <div className="flex-1 h-px bg-gray-200 dark:bg-zinc-800" />
           </div>
 
-          {/* Quick Demo Access Roles Grid */}
-          <div className="grid grid-cols-2 gap-2.5 max-h-48 overflow-y-auto pr-1">
-            {availableUsers.map((u) => {
-              const theme = getRoleTheme(u.role);
-              return (
-                <div
-                  key={u.id}
-                  onClick={() => handleQuickLogin(u.id)}
-                  className="flex items-center gap-2.5 border border-gray-200 dark:border-zinc-800 rounded-xl p-2.5 bg-gray-50/80 dark:bg-zinc-800/40 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-white dark:hover:bg-zinc-800 transition cursor-pointer group"
-                  title={`${u.name} (${u.email}) - ${u.role}`}
-                >
-                  <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[11px] font-bold ${theme.avatarBg}`}>
-                    {u.initials}
+          {/* Quick Demo Access Roles Grid (Somente usuários de teste) */}
+          <div className="grid grid-cols-2 gap-2.5">
+            {availableUsers
+              .filter(u => ['u_admin', 'u_gestor', 'u_analista', 'u_viewer'].includes(u.id) || u.email.includes('@empresa.com'))
+              .map((u) => {
+                const theme = getRoleTheme(u.role);
+                return (
+                  <div
+                    key={u.id}
+                    onClick={() => handleQuickLogin(u.id)}
+                    className="flex items-center gap-2.5 border border-gray-200 dark:border-zinc-800 rounded-xl p-2.5 bg-gray-50/80 dark:bg-zinc-800/40 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-white dark:hover:bg-zinc-800 transition cursor-pointer group"
+                    title={`Perfil de Teste: ${u.name} (${u.role})`}
+                  >
+                    <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[11px] font-bold ${theme.avatarBg}`}>
+                      {u.initials}
+                    </div>
+                    <div className="truncate min-w-0">
+                      <b className="block text-xs font-semibold text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                        {u.name.split(' ')[0]}
+                      </b>
+                      <span className={`text-[10px] font-extrabold tracking-wider ${theme.tagColor}`}>
+                        {u.role}
+                      </span>
+                    </div>
                   </div>
-                  <div className="truncate min-w-0">
-                    <b className="block text-xs font-semibold text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
-                      {u.name.split(' ')[0]} {u.name.split(' ')[1] ? u.name.split(' ')[1][0] + '.' : ''}
-                    </b>
-                    <span className={`text-[10px] font-extrabold tracking-wider ${theme.tagColor}`}>
-                      {u.role}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
 
         </div>
