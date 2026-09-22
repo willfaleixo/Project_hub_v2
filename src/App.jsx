@@ -9,6 +9,7 @@ import ExpandedViewPage from "./pages/ExpandedViewPage";
 import Approvals from "./pages/Approvals";
 import Wiki from "./pages/Wiki";
 import Users from "./pages/Users";
+import NewsPage from "./pages/NewsPage";
 import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
@@ -31,6 +32,7 @@ const App = () => {
             <Route path="approvals" element={<Approvals />} />
             <Route path="wiki" element={<Wiki />} />
             <Route path="users" element={<Users />} />
+            <Route path="news" element={<NewsPage />} />
           </Route>
         </Route>
       </Routes>

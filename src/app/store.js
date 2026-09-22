@@ -8,6 +8,7 @@ import approvalReducer from '../features/approvalSlice';
 import authReducer from '../features/authSlice';
 import wikiReducer from '../features/wikiSlice';
 import dashboardFilterReducer from '../features/dashboardFilterSlice';
+import newsReducer from '../features/newsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +21,6 @@ export const store = configureStore({
     auth: authReducer,
     wiki: wikiReducer,
     dashboardFilter: dashboardFilterReducer,
+    news: newsReducer,
   },
 });

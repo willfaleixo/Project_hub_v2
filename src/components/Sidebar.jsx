@@ -8,14 +8,17 @@ import {
   CheckSquare, 
   BookOpen, 
   X,
-  Users
+  Users,
+  Sparkles
 } from 'lucide-react';
 
 const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onOpenWizard }) => {
   const { translations: t } = useSelector(state => state.language);
   const { user } = useSelector(state => state.auth);
+  const { items: newsItems } = useSelector(state => state.news || { items: [] });
 
   const isManagerOrAdmin = user?.role === 'ADMIN' || user?.role === 'GESTOR';
+  const unreadNewsCount = (newsItems || []).filter(n => !n.readBy || !n.readBy.includes(user?.id)).length;
 
   const menuItems = [
     { path: '/', label: t.dashboard, icon: LayoutDashboard },
@@ -23,6 +26,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onOpenWizard }) => {
     { path: '/expanded-view', label: t.expandedView, icon: GitMerge },
     { path: '/approvals', label: t.approvals, icon: CheckSquare },
     { path: '/wiki', label: t.wiki, icon: BookOpen },
+    { path: '/news', label: 'Novidades & Updates', icon: Sparkles, badge: unreadNewsCount },
     ...(isManagerOrAdmin ? [{ path: '/users', label: t.users || 'Usuários', icon: Users }] : []),
   ];
 
@@ -75,15 +79,22 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onOpenWizard }) => {
                 to={item.path}
                 onClick={() => setIsSidebarOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition ${
+                  `flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition ${
                     isActive
                       ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm'
                       : 'text-gray-700 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-gray-900 dark:hover:text-white'
                   }`
                 }
               >
-                <Icon size={18} />
-                <span>{item.label}</span>
+                <div className="flex items-center gap-3">
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                </div>
+                {item.badge > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white animate-pulse">
+                    {item.badge}
+                  </span>
+                )}
               </NavLink>
             );
           })}
