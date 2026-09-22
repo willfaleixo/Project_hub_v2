@@ -1,57 +1,106 @@
-import { useEffect, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
-import MyTasksSidebar from './MyTasksSidebar'
-import ProjectSidebar from './ProjectsSidebar'
-import WorkspaceDropdown from './WorkspaceDropdown'
-import { FolderOpenIcon, LayoutDashboardIcon, SettingsIcon, UsersIcon } from 'lucide-react'
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { 
+  LayoutDashboard, 
+  FolderKanban, 
+  GitMerge, 
+  CheckSquare, 
+  BookOpen, 
+  X,
+  Users
+} from 'lucide-react';
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, onOpenWizard }) => {
+  const { translations: t } = useSelector(state => state.language);
+  const { user } = useSelector(state => state.auth);
 
-    const menuItems = [
-        { name: 'Dashboard', href: '/', icon: LayoutDashboardIcon },
-        { name: 'Projects', href: '/projects', icon: FolderOpenIcon },
-        { name: 'Team', href: '/team', icon: UsersIcon },
-    ]
+  const isManagerOrAdmin = user?.role === 'ADMIN' || user?.role === 'GESTOR';
 
-    const sidebarRef = useRef(null);
+  const menuItems = [
+    { path: '/', label: t.dashboard, icon: LayoutDashboard },
+    { path: '/projects', label: t.projects, icon: FolderKanban },
+    { path: '/expanded-view', label: t.expandedView, icon: GitMerge },
+    { path: '/approvals', label: t.approvals, icon: CheckSquare },
+    { path: '/wiki', label: t.wiki, icon: BookOpen },
+    ...(isManagerOrAdmin ? [{ path: '/users', label: t.users || 'Usuários', icon: Users }] : []),
+  ];
 
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-                setIsSidebarOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [setIsSidebarOpen]);
+  return (
+    <>
+      {/* Mobile overlay */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/50 z-30 sm:hidden backdrop-blur-sm"
+        />
+      )}
 
-    return (
-        <div ref={sidebarRef} className={`z-10 bg-white dark:bg-zinc-900 min-w-68 flex flex-col h-screen border-r border-gray-200 dark:border-zinc-800 max-sm:absolute transition-all ${isSidebarOpen ? 'left-0' : '-left-full'} `} >
-            <WorkspaceDropdown />
-            <hr className='border-gray-200 dark:border-zinc-800' />
-            <div className='flex-1 overflow-y-scroll no-scrollbar flex flex-col'>
-                <div>
-                    <div className='p-4'>
-                        {menuItems.map((item) => (
-                            <NavLink to={item.href} key={item.name} className={({ isActive }) => `flex items-center gap-3 py-2 px-4 text-gray-800 dark:text-zinc-100 cursor-pointer rounded transition-all  ${isActive ? 'bg-gray-100 dark:bg-zinc-900 dark:bg-gradient-to-br dark:from-zinc-800 dark:to-zinc-800/50  dark:ring-zinc-800' : 'hover:bg-gray-50 dark:hover:bg-zinc-800/60'}`} >
-                                <item.icon size={16} />
-                                <p className='text-sm truncate'>{item.name}</p>
-                            </NavLink>
-                        ))}
-                        <button className='flex w-full items-center gap-3 py-2 px-4 text-gray-800 dark:text-zinc-100 cursor-pointer rounded hover:bg-gray-50 dark:hover:bg-zinc-800/60 transition-all'>
-                            <SettingsIcon size={16} />
-                            <p className='text-sm truncate'>Settings</p>
-                        </button>
-                    </div>
-                    <MyTasksSidebar />
-                    <ProjectSidebar />
-                </div>
-
-
+      <aside
+        className={`fixed sm:static top-0 left-0 h-full w-64 bg-white dark:bg-zinc-900 border-r border-gray-200 dark:border-zinc-800 flex flex-col z-40 transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
+        }`}
+      >
+        {/* Brand Header */}
+        <div className="p-4 border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="Hub de Projetos Logo" className="w-8 h-8 rounded-xl object-cover shadow-sm" />
+            <div>
+              <h1 className="font-bold text-gray-900 dark:text-white text-base leading-tight">
+                {t.appTitle}
+              </h1>
+              <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold tracking-wide uppercase">
+                Enterprise Hub
+              </span>
             </div>
-
+          </div>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="sm:hidden p-1 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-zinc-800"
+          >
+            <X size={18} />
+          </button>
         </div>
-    )
-}
 
-export default Sidebar
+        {/* Navigation Menu */}
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+          <div className="px-3 py-1 text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-wider">
+            Navegação Principal
+          </div>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition ${
+                    isActive
+                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-gray-700 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-gray-900 dark:hover:text-white'
+                  }`
+                }
+              >
+                <Icon size={18} />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        {/* Footer / Quick Action */}
+        <div className="p-4 border-t border-gray-200 dark:border-zinc-800">
+          <button
+            onClick={onOpenWizard}
+            className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-xs font-bold shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2"
+          >
+            <span>+ {t.newProject}</span>
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+};
+
+export default Sidebar;

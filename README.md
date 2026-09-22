@@ -1,35 +1,29 @@
 <div align="center">
-  <h1><img src="https://project-management-gs.vercel.app/favicon.ico" width="20" height="20" alt="project-management Favicon">
-   project-management</h1>
+  <h1><img src="./public/logo.png" width="28" height="28" alt="Hub de Projetos Logo">
+   Hub de Projetos v2</h1>
   <p>
-    An open-source project management platform built with ReactJS and Tailwind CSS.
-  </p>
-  <p>
-    <a href="https://github.com/GreatStackDev/project-management/blob/main/LICENSE.md"><img src="https://img.shields.io/github/license/GreatStackDev/project-management?style=for-the-badge" alt="License"></a>
-    <a href="https://github.com/GreatStackDev/project-management/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome"></a>
-    <a href="https://github.com/GreatStackDev/project-management/issues"><img src="https://img.shields.io/github/issues/GreatStackDev/project-management?style=for-the-badge" alt="GitHub issues"></a>
+    Plataforma corporativa executiva de Gestão de Projetos, Portfólio (PPM) e Governança de PMO desenvolvida com ReactJS e Tailwind CSS.
   </p>
 </div>
 
 ---
 
-## 📖 Table of Contents
+## 📄 Documentação Completa do Projeto
 
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#-tech-stack)
-- [🚀 Getting Started](#-getting-started)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
+Para uma descrição detalhada sobre o **intuito do projeto e todas as funcionalidades implementadas**, consulte o arquivo em português:
+👉 [**DESCRICAO_DO_PROJETO.md**](./DESCRICAO_DO_PROJETO.md)
 
 ---
 
-## 📝 Features <a name="-features"></a>
+## 📝 Principais Funcionalidades <a name="-features"></a>
 
-- **Multiple Workspaces:** Allow multiple workspaces to be created, each with its own set of projects, tasks, and members.
-- **Project Management:** Manage projects, tasks, and team members.
-- **Analytics:** View project analytics, including progress, completion rate, and team size.
-- **Task Management:** Assign tasks to team members, set due dates, and track task status.
-- **User Management:** Invite team members, manage user roles, and view user activity.
+- **Dashboard Executivo Interativo:** Indicadores globais (Capex, Opex, Ganhos Reais), Cronograma Gantt interativo, Roadmap Anual e Atividades Recentes interativas com modal de detalhamento.
+- **Gestão de Projetos (PPM) & Wizard em 4 Etapas:** Acompanhamento completo do Termo de Abertura, Cronograma, Tarefas, Riscos, Open Points, RACI e Aprovações.
+- **Auditoria Imutável & Aba de Histórico de Modificações:** Registro de todas as alterações feitas no projeto com identificação de usuário, perfil, data/hora PT-BR e comparativo DE vs PARA.
+- **Exportação BBP em PDF:** Geração automatizada do relatório Business Blueprint em PDF para apresentações executivas.
+- **Escalação Executiva de BOs:** Envio de alertas de bloqueio ao gestor com geração de e-mail e registro na matriz de alterações.
+- **Wiki & Base de Conhecimento:** Inserção dinâmica de novos artigos (links externos e PDFs) com conversão automática para cards e persistência.
+- **Localização PT-BR:** Formatação nativa de datas, horas, meses e dias no padrão brasileiro (`dd/MM/yyyy às HH:mm`).
 
 ## 🛠️ Tech Stack <a name="-tech-stack"></a>
 

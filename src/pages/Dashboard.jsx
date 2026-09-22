@@ -1,44 +1,83 @@
-import { Plus } from 'lucide-react'
-import { useState } from 'react'
-import StatsGrid from '../components/StatsGrid'
-import ProjectOverview from '../components/ProjectOverview'
-import RecentActivity from '../components/RecentActivity'
-import TasksSummary from '../components/TasksSummary'
-import CreateProjectDialog from '../components/CreateProjectDialog'
+import React, { useState } from 'react';
+import { Printer } from 'lucide-react';
+import MetricCards from '../components/dashboard/MetricCards';
+import InteractiveGanttTimeline from '../components/dashboard/InteractiveGanttTimeline';
+import AreaSegmentation from '../components/dashboard/AreaSegmentation';
+import AnalystOverview from '../components/dashboard/AnalystOverview';
+import ProjectStatusChart from '../components/dashboard/ProjectStatusChart';
+import AnnualCostsAndGainsChart from '../components/dashboard/AnnualCostsAndGainsChart';
+import AnnualRoadmap from '../components/dashboard/AnnualRoadmap';
+import RecentActivity from '../components/RecentActivity';
+import GlobalDashboardFilter from '../components/dashboard/GlobalDashboardFilter';
+import AttentionProjectsWidget from '../components/dashboard/AttentionProjectsWidget';
+import PortfolioExportModal from '../components/projects/PortfolioExportModal';
 
 const Dashboard = () => {
+  const [isPortfolioExportOpen, setIsPortfolioExportOpen] = useState(false);
 
-    const user = { fullName: 'User' }
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-    return (
-        <div className='max-w-6xl mx-auto'>
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 ">
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-1"> Welcome back, {user?.fullName || 'User'} </h1>
-                    <p className="text-gray-500 dark:text-zinc-400 text-sm"> Here's what's happening with your projects today </p>
-                </div>
-
-                <button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2 px-5 py-2 text-sm rounded bg-gradient-to-br from-blue-500 to-blue-600 text-white space-x-2 hover:opacity-90 transition" >
-                    <Plus size={16} /> New Project
-                </button>
-
-                <CreateProjectDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
-            </div>
-
-            <StatsGrid />
-
-            <div className="grid lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
-                    <ProjectOverview />
-                    <RecentActivity />
-                </div>
-                <div>
-                    <TasksSummary />
-                </div>
-            </div>
+  return (
+    <div className="space-y-6">
+      {/* Top Header Banner with Portfolio PDF Export */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black text-zinc-900 dark:text-white">Dashboard Executivo de Portfólio</h1>
+          <p className="text-xs text-zinc-500">Visão consolidada de saúde, prazos e métricas dos projetos corporativos</p>
         </div>
-    )
-}
 
-export default Dashboard
+        <button
+          onClick={() => setIsPortfolioExportOpen(true)}
+          className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-bold rounded-xl text-xs transition shadow-sm"
+          title="Exportar Relatório Executivo de Todo o Portfólio em PDF"
+        >
+          <Printer size={15} />
+          <span>📄 Exportar Portfólio (PDF)</span>
+        </button>
+      </div>
+
+      {/* Persistent Global Filter Bar */}
+      <GlobalDashboardFilter />
+
+      {/* 1. Metric Cards (Quantidade e Totais) */}
+      <MetricCards />
+
+      {/* 2. Executive Charts Grid */}
+      <div className="space-y-6">
+        {/* Row A: Status dos Projetos + Segmentação por Área */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ProjectStatusChart />
+          <AreaSegmentation />
+        </div>
+
+        {/* Row B: Custos Totais vs. Ganhos Reais + Visão por Analista */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-7">
+            <AnnualCostsAndGainsChart />
+          </div>
+          <div className="lg:col-span-5">
+            <AnalystOverview />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Attention Projects Alert Widget */}
+      <AttentionProjectsWidget />
+
+      {/* 4. Interactive Gantt Timeline */}
+      <InteractiveGanttTimeline />
+
+      {/* 5. Roadmap do Ano & Atividades Recentes */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <AnnualRoadmap />
+        <RecentActivity />
+      </div>
+
+      {/* Portfolio Export PDF Modal */}
+      <PortfolioExportModal
+        isOpen={isPortfolioExportOpen}
+        onClose={() => setIsPortfolioExportOpen(false)}
+      />
+    </div>
+  );
+};
+
+export default Dashboard;
