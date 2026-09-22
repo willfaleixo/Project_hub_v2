@@ -17,9 +17,14 @@ import {
   User,
   Sparkles,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  Pencil,
+  Lock,
+  Eye,
+  EyeOff,
+  Key
 } from 'lucide-react';
-import { addUser, deleteUser, toggleUserOnlineStatus, switchRoleUser } from '../features/authSlice';
+import { addUser, updateUser, deleteUser, toggleUserOnlineStatus, switchRoleUser } from '../features/authSlice';
 import toast from 'react-hot-toast';
 
 const Users = () => {
@@ -31,12 +36,27 @@ const Users = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
+  // Edit Modal State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    id: '',
+    name: '',
+    email: '',
+    role: 'ANALISTA',
+    area: 'Operações Luxottica',
+    password: '',
+    avatarGradient: 'from-emerald-600 to-teal-600',
+    initials: '',
+    isOnline: true
+  });
+
   // Form State
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     role: 'ANALISTA',
-    area: 'CTI & Operações',
+    area: 'Operações Luxottica',
     isOnline: true
   });
 
@@ -124,9 +144,45 @@ const Users = () => {
       name: '',
       email: '',
       role: 'ANALISTA',
-      area: 'CTI & Operações',
+      area: 'Operações Luxottica',
       isOnline: true
     });
+  };
+
+  const handleOpenEditModal = (u) => {
+    setEditFormData({
+      id: u.id,
+      name: u.name || '',
+      email: u.email || '',
+      role: u.role || 'ANALISTA',
+      area: u.area || 'Operações Luxottica',
+      password: u.password || 'Essilorlux@2026',
+      avatarGradient: u.avatarGradient || getGradientForRole(u.role),
+      initials: u.initials || getInitials(u.name),
+      isOnline: u.isOnline ?? true
+    });
+    setShowEditPassword(false);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateUserSubmit = (e) => {
+    e.preventDefault();
+    if (!editFormData.name.trim() || !editFormData.email.trim()) {
+      toast.error('Preencha o nome e o e-mail do usuário.');
+      return;
+    }
+
+    const updatedUser = {
+      ...editFormData,
+      name: editFormData.name.trim(),
+      email: editFormData.email.trim(),
+      area: editFormData.area.trim() || 'Geral',
+      initials: editFormData.initials.trim() || getInitials(editFormData.name)
+    };
+
+    dispatch(updateUser(updatedUser));
+    toast.success(`Dados de ${updatedUser.name} atualizados com sucesso!`);
+    setIsEditModalOpen(false);
   };
 
   const handleDeleteConfirm = () => {
@@ -420,6 +476,15 @@ const Users = () => {
                     <span>{isSelf ? 'Sessão Ativa' : 'Simular Login'}</span>
                   </button>
 
+                  {/* Edit User Details */}
+                  <button
+                    onClick={() => handleOpenEditModal(u)}
+                    className="p-1.5 rounded-lg bg-gray-100 dark:bg-zinc-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition"
+                    title="Editar qualquer informação do card"
+                  >
+                    <Pencil size={15} />
+                  </button>
+
                   {/* Toggle Online Status */}
                   <button
                     onClick={() => handleToggleStatus(u)}
@@ -454,7 +519,7 @@ const Users = () => {
       {/* Modal: Cadastrar Novo Usuário */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-6">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 pb-4">
               <div className="flex items-center gap-2.5">
@@ -564,6 +629,188 @@ const Users = () => {
                   className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition shadow-md shadow-blue-500/20"
                 >
                   Cadastrar Usuário
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Editar Informações do Usuário */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                  <Pencil size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-base">Editar Informações do Usuário</h3>
+                  <p className="text-xs text-gray-500 dark:text-zinc-400">Atualize nome, e-mail, perfil, senha e personalização do card.</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-1 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleUpdateUserSubmit} className="space-y-4 text-xs">
+              
+              {/* Preview Avatar Header */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-zinc-800/60 rounded-2xl border border-gray-200 dark:border-zinc-700/80">
+                <div className={`size-12 rounded-2xl bg-gradient-to-tr ${editFormData.avatarGradient} text-white font-black text-sm flex items-center justify-center shadow-md`}>
+                  {editFormData.initials || 'US'}
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white text-sm">{editFormData.name || 'Sem nome'}</h4>
+                  <span className="text-[11px] text-gray-500 dark:text-zinc-400">{editFormData.email || 'sem-email'}</span>
+                </div>
+              </div>
+
+              {/* Nome Completo */}
+              <div className="space-y-1">
+                <label className="font-bold text-gray-700 dark:text-zinc-300">Nome Completo *</label>
+                <div className="relative">
+                  <User size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="space-y-1">
+                <label className="font-bold text-gray-700 dark:text-zinc-300">E-mail Corporativo *</label>
+                <div className="relative">
+                  <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="email"
+                    required
+                    value={editFormData.email}
+                    onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                    className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Perfil & Área */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-bold text-gray-700 dark:text-zinc-300">Perfil / Função *</label>
+                  <select
+                    value={editFormData.role}
+                    onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
+                    className="w-full p-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium"
+                  >
+                    <option value="ADMIN">ADMIN</option>
+                    <option value="GESTOR">GESTOR</option>
+                    <option value="ANALISTA">ANALISTA</option>
+                    <option value="VIEWER">VIEWER</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-gray-700 dark:text-zinc-300">Área / Depto</label>
+                  <input
+                    type="text"
+                    value={editFormData.area}
+                    onChange={(e) => setEditFormData({ ...editFormData, area: e.target.value })}
+                    className="w-full p-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Senha */}
+              <div className="space-y-1">
+                <label className="font-bold text-gray-700 dark:text-zinc-300">Senha de Acesso</label>
+                <div className="relative">
+                  <Key size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type={showEditPassword ? "text" : "password"}
+                    value={editFormData.password}
+                    onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
+                    className="w-full pl-9 pr-10 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEditPassword(!showEditPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200"
+                  >
+                    {showEditPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Iniciais e Gradiente do Avatar */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-bold text-gray-700 dark:text-zinc-300">Iniciais no Avatar</label>
+                  <input
+                    type="text"
+                    maxLength={3}
+                    value={editFormData.initials}
+                    onChange={(e) => setEditFormData({ ...editFormData, initials: e.target.value.toUpperCase() })}
+                    className="w-full p-2 uppercase bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-gray-700 dark:text-zinc-300">Cor do Avatar</label>
+                  <select
+                    value={editFormData.avatarGradient}
+                    onChange={(e) => setEditFormData({ ...editFormData, avatarGradient: e.target.value })}
+                    className="w-full p-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium text-xs"
+                  >
+                    <option value="from-emerald-600 to-teal-600">Verde (Analista)</option>
+                    <option value="from-blue-600 to-indigo-600">Azul (Gestor)</option>
+                    <option value="from-purple-600 to-indigo-700">Roxo (Admin)</option>
+                    <option value="from-cyan-600 to-teal-600">Ciano</option>
+                    <option value="from-amber-500 to-orange-600">Laranja (Viewer)</option>
+                    <option value="from-rose-600 to-pink-600">Rosa / Magenta</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Status Online Checkbox */}
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/60 rounded-xl border border-gray-200 dark:border-zinc-700/80">
+                <div>
+                  <span className="font-bold text-gray-800 dark:text-zinc-200">Presença Conectada (Online)</span>
+                  <p className="text-[11px] text-gray-500 dark:text-zinc-400">Definir se o usuário é exibido como conectado em tempo real</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={editFormData.isOnline}
+                  onChange={(e) => setEditFormData({ ...editFormData, isOnline: e.target.checked })}
+                  className="size-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Modal Buttons */}
+              <div className="pt-3 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 font-semibold hover:bg-gray-200 dark:hover:bg-zinc-700 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold transition shadow-md shadow-blue-500/20"
+                >
+                  Salvar Alterações
                 </button>
               </div>
 

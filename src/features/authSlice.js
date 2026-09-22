@@ -187,6 +187,22 @@ export const authSlice = createSlice({
       state.availableUsers.push(newUser);
       localStorage.setItem('hub_available_users', JSON.stringify(state.availableUsers));
     },
+    updateUser: (state, action) => {
+      const updated = action.payload;
+      const index = state.availableUsers.findIndex(u => u.id === updated.id);
+      if (index !== -1) {
+        state.availableUsers[index] = {
+          ...state.availableUsers[index],
+          ...updated,
+          lastActive: updated.isOnline ? 'Online agora' : (state.availableUsers[index].lastActive || 'Desconectado recentemente')
+        };
+        if (state.user && state.user.id === updated.id) {
+          state.user = state.availableUsers[index];
+          localStorage.setItem('hub_user', JSON.stringify(state.user));
+        }
+        localStorage.setItem('hub_available_users', JSON.stringify(state.availableUsers));
+      }
+    },
     deleteUser: (state, action) => {
       const userId = action.payload;
       state.availableUsers = state.availableUsers.filter(u => u.id !== userId);
@@ -208,5 +224,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { login, switchRoleUser, addUser, deleteUser, toggleUserOnlineStatus, logout } = authSlice.actions;
+export const { login, switchRoleUser, addUser, updateUser, deleteUser, toggleUserOnlineStatus, logout } = authSlice.actions;
 export default authSlice.reducer;
